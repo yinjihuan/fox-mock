@@ -17,7 +17,7 @@ fox-mock 是基于Java Agent实现的自测，联调Mock利器。能解决你的
 curl -L http://file.cxytiandi.com/install.sh | sh
 ```
 
-如果是Windows可以自行通过http://file.cxytiandi.com/foxmock.zip进行下载，浏览器访问即可。
+如果是Windows可以自行通过http://file.cxytiandi.com/foxmock.zip 进行下载，浏览器访问即可。
 
 下载完成后会在当前目录有一个foxmock的文件夹，文件夹里面包含了fox-mock的包。文件夹内容如下：
 - fox-mock-agent-${version}.jar  核心代码
