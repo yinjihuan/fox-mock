@@ -43,7 +43,15 @@ public class LocalFileStorage implements Storage {
             }
 
             Files.list(Paths.get(fileDirectory)).forEach(path -> {
-                mockData.put(path.getFileName().toString(), readFileContent(path));
+                String key = path.getFileName().toString();
+                if (request.getMockMethodWhiteList() != null && !request.getMockMethodWhiteList().isEmpty()) {
+                    if (request.getMockMethodWhiteList().contains(key)) {
+                        mockData.put(key, readFileContent(path));
+                    }
+                } else {
+                    mockData.put(key, readFileContent(path));
+                }
+
             });
         } catch (IOException e) {
             LOG.error("loadData IOException", e);

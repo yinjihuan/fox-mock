@@ -24,13 +24,17 @@ public class Bootstrap {
     public static void main(String[] args) {
         try {
             Properties config = Config.getConfig();
+
             String foxMockFilePath = config.getProperty("foxMockFilePath");
             String foxMockAgentJarPath = config.getProperty("foxMockAgentJarPath");
+            String mockMethodWhiteList = config.getProperty("mockMethodWhiteList", "");
+
             if (Objects.isNull(foxMockAgentJarPath)) {
                 foxMockAgentJarPath = PathUtils.getAgentPath() + File.separator + "fox-mock-agent-1.0-SNAPSHOT.jar";
             }
+
             VirtualMachine attach = VirtualMachine.attach(String.valueOf(getPid()));
-            String agentArgs = String.format("%s=foxMockFilePath=%s", foxMockAgentJarPath, foxMockFilePath);
+            String agentArgs = String.format("%s=foxMockFilePath=%s,mockMethodWhiteList=%s", foxMockAgentJarPath, foxMockFilePath, mockMethodWhiteList);
             attach.loadAgent(agentArgs);
             attach.detach();
         } catch (Exception e) {

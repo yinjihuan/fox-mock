@@ -2,6 +2,10 @@ package com.cxytiandi.foxmock.agent.model;
 
 import com.cxytiandi.foxmock.agent.utils.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * agent参数
  *
@@ -14,7 +18,16 @@ import com.cxytiandi.foxmock.agent.utils.StringUtils;
  */
 public class FoxMockAgentArgs {
 
+    /**
+     * mock文件路径
+     */
     private String foxMockFilePath;
+
+    /**
+     * mock方法白名单,如果文件夹中有多个方法会被全部mock,如果指定了此配置将只会mock这里指定的方法
+     * 格式: com.xx.xxService#getName|com.xx.xxService#getAge
+     */
+    private List<String> mockMethodWhiteList;
 
     public FoxMockAgentArgs(String agentArgs) {
         parseArgs(agentArgs);
@@ -24,20 +37,27 @@ public class FoxMockAgentArgs {
         if (!StringUtils.isBlank(agentArgs)) {
             String[] args = agentArgs.split(",");
             for (String arg : args) {
-                String key = arg.split("=")[0];
-                String value = arg.split("=")[1];
+                String[] values = arg.split("=");
+                if (values.length != 2) {
+                    continue;
+                }
+                String key = values[0];
+                String value = values[1];
                 if ("foxMockFilePath".equals(key)) {
                     this.foxMockFilePath = value;
+                }
+                if ("mockMethodWhiteList".equals(key)) {
+                    this.mockMethodWhiteList = new ArrayList<>(Arrays.asList(value.split("\\|")));
                 }
             }
         }
     }
 
-    public void setFoxMockFilePath(String foxMockFilePath) {
-        this.foxMockFilePath = foxMockFilePath;
-    }
-
     public String getFoxMockFilePath() {
         return foxMockFilePath;
+    }
+
+    public List<String> getMockMethodWhiteList() {
+        return mockMethodWhiteList;
     }
 }
