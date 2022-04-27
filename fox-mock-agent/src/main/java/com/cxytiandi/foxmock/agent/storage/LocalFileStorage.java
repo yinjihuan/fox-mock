@@ -1,6 +1,7 @@
 package com.cxytiandi.foxmock.agent.storage;
 
-import com.cxytiandi.foxmock.agent.logger.Logger;
+import com.alibaba.arthas.deps.org.slf4j.Logger;
+import com.alibaba.arthas.deps.org.slf4j.LoggerFactory;
 import com.cxytiandi.foxmock.agent.model.FoxMockAgentArgs;
 import com.cxytiandi.foxmock.agent.utils.StringUtils;
 
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public class LocalFileStorage implements Storage {
 
-    private static final Logger LOG = Logger.getLogger(LocalFileStorage.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LocalFileStorage.class);
 
     private static Map<String, String> mockData = new ConcurrentHashMap<>();
 

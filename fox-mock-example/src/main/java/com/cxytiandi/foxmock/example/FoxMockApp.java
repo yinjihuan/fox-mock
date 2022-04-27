@@ -15,7 +15,6 @@ public class FoxMockApp {
        while (true) {
            UserService userService = new UserService();
            System.out.println(String.format("你好 %s", userService.getName2().getId()));
-           System.out.println(String.format("你好 %s", userService.getName2().getId()));
            System.out.println(String.format("你好 %s", userService.getAge()));
            System.out.println(String.format("你好 %s", userService.getAddrs()));
            System.out.println(String.format("你好 %s", userService.getUsers()));

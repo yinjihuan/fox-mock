@@ -1,6 +1,7 @@
 package com.cxytiandi.foxmock.agent.transformer;
 
-import com.cxytiandi.foxmock.agent.logger.Logger;
+import com.alibaba.arthas.deps.org.slf4j.Logger;
+import com.alibaba.arthas.deps.org.slf4j.LoggerFactory;
 import com.cxytiandi.foxmock.agent.model.ClassInfo;
 import com.cxytiandi.foxmock.agent.storage.StorageHelper;
 import com.cxytiandi.foxmock.agent.utils.StringUtils;
@@ -25,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MockClassFileTransformer implements ClassFileTransformer {
 
-    private static final Logger LOG = Logger.getLogger(MockClassFileTransformer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MockClassFileTransformer.class);
 
     private static Map<String, ClassInfo> CLASS_INFO = new ConcurrentHashMap<>();
 
@@ -70,7 +71,8 @@ public class MockClassFileTransformer implements ClassFileTransformer {
            return ctClass.toBytecode();
 
        } catch (Exception e) {
-           throw new RuntimeException("transform error", e);
+           LOG.error("transform {} error", className, e);
+           throw new RuntimeException("transform error " + className, e);
        }
     }
 }

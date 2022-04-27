@@ -16,7 +16,7 @@ public class UserService {
         return new UserInfo();
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return 0;
     }
 

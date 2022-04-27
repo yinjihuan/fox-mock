@@ -1,6 +1,7 @@
 package com.cxytiandi.foxmock.agent;
 
-import com.cxytiandi.foxmock.agent.logger.Logger;
+import com.alibaba.arthas.deps.org.slf4j.Logger;
+import com.alibaba.arthas.deps.org.slf4j.LoggerFactory;
 import com.cxytiandi.foxmock.agent.model.FoxMockAgentArgs;
 import com.cxytiandi.foxmock.agent.storage.StorageHelper;
 import com.cxytiandi.foxmock.agent.transformer.MockClassFileTransformer;
@@ -20,7 +21,7 @@ import java.util.Set;
  */
 public class FoxMockAgent {
 
-    private static final Logger LOG = Logger.getLogger(FoxMockAgent.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FoxMockAgent.class);
 
     public static void premain(final String agentArgs, final Instrumentation inst) {
         LOG.info(String.format("[FoxMockAgent.premain] begin, agentArgs: %s, Instrumentation:%s", agentArgs, inst));
@@ -45,11 +46,12 @@ public class FoxMockAgent {
                 try {
                     inst.retransformClasses(clz);
                 } catch (UnmodifiableClassException e) {
+                    LOG.error("retransformClasses exception", e);
                     throw new RuntimeException("retransformClasses exception", e);
                 }
             }
         }
 
-        LOG.info("agent run completely");
+        LOG.info("foxMock agent run completely");
     }
 }
