@@ -34,4 +34,14 @@ public class UserService {
         return result;
     }
 
+    public Result<UserInfo> getUser() {
+        Result<UserInfo> result = new Result<>();
+        return result;
+    }
+
+    public Result<UserDetail> getUserDetail() {
+        Result<UserDetail> result = new Result<>();
+        return result;
+    }
+
 }
