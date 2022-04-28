@@ -50,3 +50,7 @@ java -javaagent:fox-mock包的路径/fox-mock-agent-${version}.jar=foxMockFilePa
 执行之后会提示选择要attach的进程ID, 输入数字按回车即可。然后就完成了mock动作。
 
 attach之前需要将mock的文件路径在agent.properties中指定。
+
+# 文档
+
+- [fox-mock本地单测时的数据mock方式](http://cxytiandi.com/blog/detail/36611)
