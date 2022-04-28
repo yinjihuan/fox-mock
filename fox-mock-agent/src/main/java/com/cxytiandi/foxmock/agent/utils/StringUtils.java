@@ -1,6 +1,8 @@
 package com.cxytiandi.foxmock.agent.utils;
 
 /**
+ * 字符串工具类
+ *
  * @作者 尹吉欢
  * @个人微信 jihuan900
  * @微信公众号 猿天地

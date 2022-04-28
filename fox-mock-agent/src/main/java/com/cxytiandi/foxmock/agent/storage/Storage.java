@@ -5,6 +5,8 @@ import com.cxytiandi.foxmock.agent.model.FoxMockAgentArgs;
 import java.util.Set;
 
 /**
+ * mock数据存储接口
+ *
  * @作者 尹吉欢
  * @个人微信 jihuan900
  * @微信公众号 猿天地
