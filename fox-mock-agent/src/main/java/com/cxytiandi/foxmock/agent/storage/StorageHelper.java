@@ -27,8 +27,20 @@ public class StorageHelper {
         storageList.add(new HttpStorage());
     }
 
-    public static void loadAllData(FoxMockAgentArgs request) {
-        storageList.forEach(storage -> storage.loadData(request));
+    /**
+     * 加载所有数据
+     * @param request
+     * @return
+     */
+    public static boolean loadAllData(FoxMockAgentArgs request) {
+        int successCount = 0;
+        for (Storage storage : storageList) {
+            boolean result = storage.loadData(request);
+            if (result) {
+                successCount++;
+            }
+        }
+        return successCount > 0;
     }
 
     /**

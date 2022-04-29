@@ -4,6 +4,7 @@ import com.alibaba.arthas.deps.org.slf4j.Logger;
 import com.alibaba.arthas.deps.org.slf4j.LoggerFactory;
 import com.cxytiandi.foxmock.agent.model.FoxMockAgentArgs;
 import com.cxytiandi.foxmock.agent.utils.HttpUtils;
+import com.cxytiandi.foxmock.agent.utils.MD5;
 import com.cxytiandi.foxmock.agent.utils.StringUtils;
 
 import java.io.IOException;
@@ -30,18 +31,33 @@ public class HttpStorage implements Storage {
 
     private static Map<String, String> mockData = new ConcurrentHashMap<>();
 
+    private static String cacheDataMD5 = "";
+
     @Override
-    public void loadData(FoxMockAgentArgs request) {
+    public boolean loadData(FoxMockAgentArgs request) {
         if (StringUtils.isBlank(request.getMockDataHttpUrl())) {
-            return;
+            return false;
         }
 
         String mockDataText = HttpUtils.get(request.getMockDataHttpUrl());
 
-        if (!StringUtils.isBlank(mockDataText)) {
-            // attach的场景会load多次，添加之前需要清空，否则如果文件有改动，则无法卸载掉之前的mock
-            mockData.clear();
+        if (StringUtils.isBlank(mockDataText)) {
+            return false;
         }
+
+        String dataMD5 = MD5.getInstance().getMD5String(mockDataText);
+        if (StringUtils.isBlank(cacheDataMD5)) {
+            cacheDataMD5 = dataMD5;
+        } else {
+            // 没有变动无需重新mock
+            if (dataMD5.equals(cacheDataMD5)) {
+                return false;
+            }
+            cacheDataMD5 = dataMD5;
+        }
+
+        // attach的场景会load多次，添加之前需要清空，否则如果文件有改动，则无法卸载掉之前的mock
+        mockData.clear();
 
         Properties properties = new Properties();
         try {
@@ -54,8 +70,10 @@ public class HttpStorage implements Storage {
         } catch (IOException e) {
             LOG.error("loadData IOException, url is {}", request.getMockDataHttpUrl(), e);
         } catch (Exception e) {
-            LOG.error("loadData Exception url is {}", request.getMockDataHttpUrl(), e);
+            LOG.error("loadData Exception, url is {}", request.getMockDataHttpUrl(), e);
         }
+
+        return true;
     }
 
     @Override

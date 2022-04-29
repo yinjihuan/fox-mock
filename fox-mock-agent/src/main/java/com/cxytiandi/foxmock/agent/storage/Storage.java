@@ -20,7 +20,7 @@ public interface Storage {
      * 加载数据
      * @param request
      */
-    void loadData(FoxMockAgentArgs request);
+    boolean loadData(FoxMockAgentArgs request);
 
     /**
      * 获取数据

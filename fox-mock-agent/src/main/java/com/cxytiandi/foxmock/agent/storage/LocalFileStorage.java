@@ -32,12 +32,12 @@ public class LocalFileStorage implements Storage {
     private static Map<String, String> mockData = new ConcurrentHashMap<>();
 
     @Override
-    public void loadData(FoxMockAgentArgs request) {
+    public boolean loadData(FoxMockAgentArgs request) {
         try {
             String fileDirectory = request.getFoxMockFilePath();
             if (StringUtils.isBlank(fileDirectory)) {
                 LOG.info("Can not find foxMockFilePath");
-                return;
+                return false;
             }
 
             // attach的场景会load多次，添加之前需要清空，否则如果文件有改动，则无法卸载掉之前的mock
@@ -54,9 +54,12 @@ public class LocalFileStorage implements Storage {
                 }
 
             });
+
         } catch (IOException e) {
             LOG.error("loadData IOException", e);
         }
+
+        return true;
     }
 
     @Override

@@ -67,7 +67,11 @@ public class FoxMockAgent {
 
     private static void main(final String agentArgs, final Instrumentation inst) {
         LOG.info("start load data");
-        StorageHelper.loadAllData(new FoxMockAgentArgs(agentArgs));
+        boolean success = StorageHelper.loadAllData(new FoxMockAgentArgs(agentArgs));
+        if (!success) {
+            LOG.info("load data fail");
+            return;
+        }
 
         MockClassFileTransformer mockClassFileTransformer = new MockClassFileTransformer();
         inst.addTransformer(mockClassFileTransformer, true);
