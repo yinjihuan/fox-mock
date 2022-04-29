@@ -24,13 +24,21 @@ public class FoxMockAgent {
     private static final Logger LOG = LoggerFactory.getLogger(FoxMockAgent.class);
 
     public static void premain(final String agentArgs, final Instrumentation inst) {
-        LOG.info(String.format("[FoxMockAgent.premain] begin, agentArgs: %s, Instrumentation:%s", agentArgs, inst));
-        main(agentArgs, inst);
+        try {
+            LOG.info(String.format("[FoxMockAgent.premain] begin, agentArgs: %s, Instrumentation:%s", agentArgs, inst));
+            main(agentArgs, inst);
+        } catch (Exception e) {
+            LOG.error("FoxMockAgent.premain exception", e);
+        }
     }
 
     public static void agentmain(final String agentArgs, final Instrumentation inst) {
-        LOG.info(String.format("[FoxMockAgent.agentmain] begin, agentArgs: %s, Instrumentation:%s", agentArgs, inst));
-        main(agentArgs, inst);
+       try {
+           LOG.info(String.format("[FoxMockAgent.agentmain] begin, agentArgs: %s, Instrumentation:%s", agentArgs, inst));
+           main(agentArgs, inst);
+       } catch (Exception e) {
+           LOG.error("FoxMockAgent.agentmain exception", e);
+       }
     }
 
     private static void main(final String agentArgs, final Instrumentation inst) {

@@ -24,6 +24,7 @@ public class StorageHelper {
 
     static {
         storageList.add(new LocalFileStorage());
+        storageList.add(new HttpStorage());
     }
 
     public static void loadAllData(FoxMockAgentArgs request) {
