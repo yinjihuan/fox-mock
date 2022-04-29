@@ -34,14 +34,14 @@ public class LocalFileStorage implements Storage {
     @Override
     public void loadData(FoxMockAgentArgs request) {
         try {
-            // attach的场景会load多次，添加之前需要清空，否则如果文件有改动，则无法卸载掉之前的mock
-            mockData.clear();
-
             String fileDirectory = request.getFoxMockFilePath();
             if (StringUtils.isBlank(fileDirectory)) {
                 LOG.info("Can not find foxMockFilePath");
                 return;
             }
+
+            // attach的场景会load多次，添加之前需要清空，否则如果文件有改动，则无法卸载掉之前的mock
+            mockData.clear();
 
             Files.list(Paths.get(fileDirectory)).forEach(path -> {
                 String key = path.getFileName().toString();

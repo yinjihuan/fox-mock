@@ -37,6 +37,12 @@ public class HttpStorage implements Storage {
         }
 
         String mockDataText = HttpUtils.get(request.getMockDataHttpUrl());
+
+        if (!StringUtils.isBlank(mockDataText)) {
+            // attach的场景会load多次，添加之前需要清空，否则如果文件有改动，则无法卸载掉之前的mock
+            mockData.clear();
+        }
+
         Properties properties = new Properties();
         try {
             properties.load(new StringReader(mockDataText));
