@@ -30,7 +30,7 @@ public class Bootstrap {
             String mockMethodWhiteList = config.getProperty("mockMethodWhiteList", "");
 
             if (Objects.isNull(foxMockAgentJarPath)) {
-                foxMockAgentJarPath = PathUtils.getAgentPath() + File.separator + "fox-mock-agent-1.0.jar";
+                foxMockAgentJarPath = PathUtils.getAgentPath() + File.separator + "fox-mock-agent-2.0.jar";
             }
 
             VirtualMachine attach = VirtualMachine.attach(String.valueOf(getPid()));

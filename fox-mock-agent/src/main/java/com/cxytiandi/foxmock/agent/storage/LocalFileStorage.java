@@ -3,6 +3,7 @@ package com.cxytiandi.foxmock.agent.storage;
 import com.alibaba.arthas.deps.org.slf4j.Logger;
 import com.alibaba.arthas.deps.org.slf4j.LoggerFactory;
 import com.cxytiandi.foxmock.agent.model.FoxMockAgentArgs;
+import com.cxytiandi.foxmock.agent.utils.CollectionUtils;
 import com.cxytiandi.foxmock.agent.utils.StringUtils;
 
 import java.io.IOException;
@@ -10,9 +11,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -34,6 +33,7 @@ public class LocalFileStorage implements Storage {
 
     private static Map<String, String> mockData = new ConcurrentHashMap<>();
     private static Map<String, Long> mockDataLastModified = new ConcurrentHashMap<>();
+    private static List<String> mockMethodWhiteList = new ArrayList<>();
 
     @Override
     public boolean loadData(FoxMockAgentArgs request) {
@@ -44,35 +44,8 @@ public class LocalFileStorage implements Storage {
                 return false;
             }
 
-            if (!mockDataLastModified.isEmpty()) {
-                AtomicBoolean isModified = new AtomicBoolean(false);
-                AtomicInteger fileCount = new AtomicInteger();
-
-                Files.list(Paths.get(fileDirectory)).forEach(path -> {
-                    fileCount.incrementAndGet();
-
-                    String key = path.getFileName().toString();
-                    Long lastModified = mockDataLastModified.get(key);
-                    // 文件有改变
-                    if (Objects.nonNull(lastModified) && !lastModified.equals(path.toFile().lastModified())) {
-                        isModified.compareAndSet(false, true);
-                    }
-                });
-
-                // 文件有新增或者删除
-                if (fileCount.get() != mockDataLastModified.size()) {
-                    isModified.compareAndSet(false, true);
-                }
-
-                // 文件夹内没有变化
-                if (!isModified.get()) {
-                    return false;
-                } else {
-                    initMockDataLastModified(fileDirectory);
-                }
-
-            } else {
-                initMockDataLastModified(fileDirectory);
+            if (!whiteListIsModified(request) & !fileDirectoryIsModified(fileDirectory)) {
+                return false;
             }
 
             // attach的场景会load多次，添加之前需要清空，否则如果文件有改动，则无法卸载掉之前的mock
@@ -126,6 +99,56 @@ public class LocalFileStorage implements Storage {
             });
         } catch (IOException e) {
             LOG.error("loadData IOException", e);
+        }
+    }
+
+    private boolean fileDirectoryIsModified(String fileDirectory) {
+        try {
+            if (!mockDataLastModified.isEmpty()) {
+                AtomicBoolean isModified = new AtomicBoolean(false);
+                AtomicInteger fileCount = new AtomicInteger();
+
+                Files.list(Paths.get(fileDirectory)).forEach(path -> {
+                    fileCount.incrementAndGet();
+
+                    String key = path.getFileName().toString();
+                    Long lastModified = mockDataLastModified.get(key);
+                    // 文件有改变
+                    if (Objects.nonNull(lastModified) && !lastModified.equals(path.toFile().lastModified())) {
+                        isModified.compareAndSet(false, true);
+                    }
+                });
+
+                // 文件有新增或者删除
+                if (fileCount.get() != mockDataLastModified.size()) {
+                    isModified.compareAndSet(false, true);
+                }
+
+                // 文件夹内没有变化
+                if (!isModified.get()) {
+                    return false;
+                } else {
+                    initMockDataLastModified(fileDirectory);
+                }
+
+            } else {
+                initMockDataLastModified(fileDirectory);
+            }
+        } catch (IOException e) {
+            LOG.error("loadData IOException", e);
+        }
+        return true;
+    }
+
+    private boolean whiteListIsModified(FoxMockAgentArgs request) {
+        if (CollectionUtils.isEquals(mockMethodWhiteList, request.getMockMethodWhiteList())) {
+            return false;
+        } else {
+            if (request.getMockMethodWhiteList() != null) {
+                mockMethodWhiteList.clear();
+                mockMethodWhiteList.addAll(request.getMockMethodWhiteList());
+            }
+            return true;
         }
     }
 }
