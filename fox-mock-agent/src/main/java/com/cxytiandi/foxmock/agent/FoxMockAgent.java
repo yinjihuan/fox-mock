@@ -72,7 +72,7 @@ public class FoxMockAgent {
                isFirstLoad.compareAndSet(true, false);
                executor.scheduleAtFixedRate(() -> {
                    main(foxMockAgentArgs, inst);
-               }, 20, 20, TimeUnit.SECONDS);
+               }, 10, 10, TimeUnit.SECONDS);
            }
        } catch (Exception e) {
            LOG.error("FoxMockAgent.agentmain exception", e);
