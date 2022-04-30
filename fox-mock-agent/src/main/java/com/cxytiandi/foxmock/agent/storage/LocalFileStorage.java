@@ -11,8 +11,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -30,6 +33,7 @@ public class LocalFileStorage implements Storage {
     private static final Logger LOG = LoggerFactory.getLogger(LocalFileStorage.class);
 
     private static Map<String, String> mockData = new ConcurrentHashMap<>();
+    private static Map<String, Long> mockDataLastModified = new ConcurrentHashMap<>();
 
     @Override
     public boolean loadData(FoxMockAgentArgs request) {
@@ -38,6 +42,37 @@ public class LocalFileStorage implements Storage {
             if (StringUtils.isBlank(fileDirectory)) {
                 LOG.info("Can not find foxMockFilePath");
                 return false;
+            }
+
+            if (!mockDataLastModified.isEmpty()) {
+                AtomicBoolean isModified = new AtomicBoolean(false);
+                AtomicInteger fileCount = new AtomicInteger();
+
+                Files.list(Paths.get(fileDirectory)).forEach(path -> {
+                    fileCount.incrementAndGet();
+
+                    String key = path.getFileName().toString();
+                    Long lastModified = mockDataLastModified.get(key);
+                    // 文件有改变
+                    if (Objects.nonNull(lastModified) && !lastModified.equals(path.toFile().lastModified())) {
+                        isModified.compareAndSet(false, true);
+                    }
+                });
+
+                // 文件有新增或者删除
+                if (fileCount.get() != mockDataLastModified.size()) {
+                    isModified.compareAndSet(false, true);
+                }
+
+                // 文件夹内没有变化
+                if (!isModified.get()) {
+                    return false;
+                } else {
+                    initMockDataLastModified(fileDirectory);
+                }
+
+            } else {
+                initMockDataLastModified(fileDirectory);
             }
 
             // attach的场景会load多次，添加之前需要清空，否则如果文件有改动，则无法卸载掉之前的mock
@@ -52,7 +87,6 @@ public class LocalFileStorage implements Storage {
                 } else {
                     mockData.put(key, readFileContent(path));
                 }
-
             });
 
         } catch (IOException e) {
@@ -80,5 +114,18 @@ public class LocalFileStorage implements Storage {
             LOG.error(String.format("readFileContent IOException, path is {}", path.toString()), e);
         }
         return null;
+    }
+
+    private void initMockDataLastModified(String fileDirectory) {
+        try {
+            mockDataLastModified.clear();
+
+            Files.list(Paths.get(fileDirectory)).forEach(path -> {
+                String key = path.getFileName().toString();
+                mockDataLastModified.put(key, path.toFile().lastModified());
+            });
+        } catch (IOException e) {
+            LOG.error("loadData IOException", e);
+        }
     }
 }
