@@ -2,10 +2,7 @@ package com.cxytiandi.foxmock.agent.storage;
 
 import com.cxytiandi.foxmock.agent.model.FoxMockAgentArgs;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -24,10 +21,25 @@ public class StorageHelper {
 
     static {
         storageList.add(new LocalFileStorage());
+        storageList.add(new HttpStorage());
     }
 
-    public static void loadAllData(FoxMockAgentArgs request) {
-        storageList.forEach(storage -> storage.loadData(request));
+    static Set<String> allMockClassNames = new HashSet<>();
+
+    /**
+     * 加载所有数据
+     * @param request
+     * @return
+     */
+    public static boolean loadAllData(FoxMockAgentArgs request) {
+        int successCount = 0;
+        for (Storage storage : storageList) {
+            boolean result = storage.loadData(request);
+            if (result) {
+                successCount++;
+            }
+        }
+        return successCount > 0;
     }
 
     /**
@@ -50,8 +62,11 @@ public class StorageHelper {
      * @return
      */
     public static Set<String> getMockClassNames() {
-        return storageList.stream().map(storage -> {
+        Set<String> mockClassNames = storageList.stream().map(storage -> {
             return storage.getMockClassNames();
         }).flatMap(Set::stream).collect(Collectors.toSet());
+
+        allMockClassNames.addAll(mockClassNames);
+        return allMockClassNames;
     }
 }

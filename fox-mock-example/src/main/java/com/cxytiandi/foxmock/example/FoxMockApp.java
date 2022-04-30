@@ -21,6 +21,7 @@ public class FoxMockApp {
            System.out.println(String.format("你好 %s", userService.getUsers2()));
            System.out.println(String.format("你好 %s", userService.getUser()));
            System.out.println(String.format("你好 %s", userService.getUserDetail()));
+           System.out.println("----------------------------------------");
            Thread.sleep(5000);
        }
 

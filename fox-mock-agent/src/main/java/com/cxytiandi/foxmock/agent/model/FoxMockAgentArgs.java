@@ -2,6 +2,8 @@ package com.cxytiandi.foxmock.agent.model;
 
 import com.cxytiandi.foxmock.agent.utils.StringUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.List;
  */
 public class FoxMockAgentArgs {
 
+
     /**
      * mock文件路径
      */
@@ -28,6 +31,11 @@ public class FoxMockAgentArgs {
      * 格式: com.xx.xxService#getName|com.xx.xxService#getAge
      */
     private List<String> mockMethodWhiteList;
+
+    /**
+     * mock数据通过http请求获取
+     */
+    private String mockDataHttpUrl;
 
     public FoxMockAgentArgs(String agentArgs) {
         parseArgs(agentArgs);
@@ -49,7 +57,18 @@ public class FoxMockAgentArgs {
                 if ("mockMethodWhiteList".equals(key)) {
                     this.mockMethodWhiteList = new ArrayList<>(Arrays.asList(value.split("\\|")));
                 }
+                if ("mockDataHttpUrl".equals(key)) {
+                    this.mockDataHttpUrl = decodeUrl(value);
+                }
             }
+        }
+    }
+
+    private String decodeUrl(String url) {
+        try {
+            return URLDecoder.decode(url, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+           throw new RuntimeException(e);
         }
     }
 
@@ -59,5 +78,9 @@ public class FoxMockAgentArgs {
 
     public List<String> getMockMethodWhiteList() {
         return mockMethodWhiteList;
+    }
+
+    public String getMockDataHttpUrl() {
+        return mockDataHttpUrl;
     }
 }
