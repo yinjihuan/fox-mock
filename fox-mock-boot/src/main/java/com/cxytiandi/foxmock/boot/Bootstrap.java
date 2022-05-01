@@ -25,16 +25,17 @@ public class Bootstrap {
         try {
             Properties config = Config.getConfig();
 
-            String foxMockFilePath = config.getProperty("foxMockFilePath");
+            String foxMockFilePath = config.getProperty("foxMockFilePath", "");
             String foxMockAgentJarPath = config.getProperty("foxMockAgentJarPath");
             String mockMethodWhiteList = config.getProperty("mockMethodWhiteList", "");
+            String mockDataHttpUrl = config.getProperty("mockDataHttpUrl", "");
 
             if (Objects.isNull(foxMockAgentJarPath)) {
-                foxMockAgentJarPath = PathUtils.getAgentPath() + File.separator + "fox-mock-agent-1.0.jar";
+                foxMockAgentJarPath = PathUtils.getAgentPath() + File.separator + "fox-mock-agent-2.0.jar";
             }
 
             VirtualMachine attach = VirtualMachine.attach(String.valueOf(getPid()));
-            String agentArgs = String.format("%s=foxMockFilePath=%s,mockMethodWhiteList=%s", foxMockAgentJarPath, foxMockFilePath, mockMethodWhiteList);
+            String agentArgs = String.format("%s=foxMockFilePath=%s,mockMethodWhiteList=%s,mockDataHttpUrl=%s", foxMockAgentJarPath, foxMockFilePath, mockMethodWhiteList, mockDataHttpUrl);
             attach.loadAgent(agentArgs);
             attach.detach();
         } catch (Exception e) {
