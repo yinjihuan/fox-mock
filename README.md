@@ -61,3 +61,7 @@ attach之前需要将mock的文件路径在agent.properties中指定。
 - [fox-mock本地单测时的数据mock方式](http://cxytiandi.com/blog/detail/36611)
 - [fox-mock测试环境联调时的数据mock方式](http://cxytiandi.com/blog/detail/36612)
 - [fox-mock对接配置中心管理mock数据](http://cxytiandi.com/blog/detail/36614)
+
+# 视频讲解
+
+- [Java 程序员的福音，mock神器它来啦！再也不用为自测，联调而烦恼啦！](https://www.bilibili.com/video/BV1WS4y1h76q)
