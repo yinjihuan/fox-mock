@@ -5,8 +5,10 @@ import com.alibaba.arthas.deps.org.slf4j.LoggerFactory;
 import com.cxytiandi.foxmock.agent.model.FoxMockAgentArgs;
 import com.cxytiandi.foxmock.agent.storage.StorageHelper;
 import com.cxytiandi.foxmock.agent.transformer.MockClassFileTransformer;
+
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -62,21 +64,21 @@ public class FoxMockAgent {
     }
 
     public static void agentmain(final String agentArgs, final Instrumentation inst) {
-       try {
-           foxMockAgentArgs = agentArgs;
-           LOG.info(String.format("[FoxMockAgent.agentmain] begin, agentArgs: %s, Instrumentation:%s", agentArgs, inst));
+        try {
+            foxMockAgentArgs = agentArgs;
+            LOG.info(String.format("[FoxMockAgent.agentmain] begin, agentArgs: %s, Instrumentation:%s", agentArgs, inst));
 
-           main(agentArgs, inst);
+            main(agentArgs, inst);
 
-           if (isFirstLoad.get()) {
-               isFirstLoad.compareAndSet(true, false);
-               executor.scheduleAtFixedRate(() -> {
-                   main(foxMockAgentArgs, inst);
-               }, 10, 10, TimeUnit.SECONDS);
-           }
-       } catch (Exception e) {
-           LOG.error("FoxMockAgent.agentmain exception", e);
-       }
+            if (isFirstLoad.get()) {
+                isFirstLoad.compareAndSet(true, false);
+                executor.scheduleAtFixedRate(() -> {
+                    main(foxMockAgentArgs, inst);
+                }, 10, 10, TimeUnit.SECONDS);
+            }
+        } catch (Exception e) {
+            LOG.error("FoxMockAgent.agentmain exception", e);
+        }
     }
 
     private synchronized static void main(final String agentArgs, final Instrumentation inst) {
@@ -91,21 +93,46 @@ public class FoxMockAgent {
             MockClassFileTransformer mockClassFileTransformer = new MockClassFileTransformer();
             inst.addTransformer(mockClassFileTransformer, true);
         }
-
-        Set<String> mockClassNames = StorageHelper.getMockClassNames();
-        Class[] allLoadedClasses = inst.getAllLoadedClasses();
-        for (Class clz : allLoadedClasses) {
-            if (mockClassNames.contains(clz.getName())) {
-                try {
-                    LOG.info("retransformClass {}", clz.getName());
-                    inst.retransformClasses(clz);
-                } catch (UnmodifiableClassException e) {
-                    LOG.error("retransformClasses exception", e);
-                    throw new RuntimeException("retransformClasses exception", e);
-                }
+        Set<Class<?>> matchClass = matchClass(inst);
+        for (Class<?> clz : matchClass) {
+            try {
+                LOG.info("retransformClass {}", clz.getName());
+                inst.retransformClasses(clz);
+            } catch (UnmodifiableClassException e) {
+                LOG.error("retransformClasses exception", e);
+                throw new RuntimeException("retransformClasses exception", e);
             }
         }
 
         LOG.info("foxMock agent run completely");
+    }
+
+    private static Set<Class<?>> matchClass(Instrumentation inst) {
+        final Class<?>[] allLoadedClasses = inst.getAllLoadedClasses();
+        final Set<Class<?>> resultSet = new HashSet<>();
+        final Set<Class<?>> matches = new HashSet<>();
+        final Set<String> mockClassNames = StorageHelper.getMockClassNames();
+        // 循环所有已加载的类 得到所有匹配的class
+        for (Class<?> clazz : allLoadedClasses) {
+            if (clazz == null) {
+                continue;
+            }
+            if (mockClassNames.contains(clazz.getName())) {
+                matches.add(clazz);
+            }
+        }
+        // 循环所有的类 判断当前类的父类或者实现的接口是否是匹配到的类
+        for (Class<?> clazz : allLoadedClasses) {
+            if (clazz == null) {
+                continue;
+            }
+            for (Class<?> superClass : matches) {
+                if (superClass.isAssignableFrom(clazz)) {
+                    resultSet.add(clazz);
+                    break;
+                }
+            }
+        }
+        return resultSet;
     }
 }
