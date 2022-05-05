@@ -8,6 +8,7 @@ import com.cxytiandi.foxmock.agent.transformer.MockClassFileTransformer;
 
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -127,12 +128,17 @@ public class FoxMockAgent {
                 continue;
             }
             for (Class<?> superClass : matches) {
-                if (superClass.isAssignableFrom(clazz)) {
+                if (superClass.isAssignableFrom(clazz) && !isUnsupportedClass(clazz)) {
                     resultSet.add(clazz);
                     break;
                 }
             }
         }
         return resultSet;
+    }
+
+    private static boolean isUnsupportedClass(Class<?> clazz) {
+        return clazz.isArray() || clazz.isInterface() || clazz.isEnum()
+                || clazz.equals(Class.class) || clazz.equals(Integer.class) || clazz.equals(Method.class);
     }
 }
