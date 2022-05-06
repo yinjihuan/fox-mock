@@ -26,6 +26,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class FoxMockAgent {
 
+    static {
+        System.setProperty("arthas.logback.configurationFile", "foxmock-logback.xml");
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(FoxMockAgent.class);
 
     private static ScheduledExecutorService executor = Executors.newScheduledThreadPool(1, new ThreadFactory() {
