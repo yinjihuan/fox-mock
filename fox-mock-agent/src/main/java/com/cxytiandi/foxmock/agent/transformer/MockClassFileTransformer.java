@@ -60,10 +60,16 @@ public class MockClassFileTransformer implements ClassFileTransformer {
                if (Objects.nonNull(data)) {
                    match = true;
                    LOG.info(String.format("mock methods %s, mock data is %s", key, data));
-                   String mockCode = "if(true){" +
-                                         "return ($r)com.cxytiandi.foxmock.agent.utils.JsonUtils.parse(%s,%s,%s);" +
-                                     "}";
-                   method.insertBefore(String.format(mockCode, new Gson().toJson(data), "\""+className+"\"", "\""+methodName+"\""));
+                   if (data.startsWith("throw new")) {
+                       String mockCode = "if(true){%s}";
+                       method.insertBefore(String.format(mockCode, data));
+                   } else {
+                       String mockCode = "if(true){" +
+                                             "return ($r)com.cxytiandi.foxmock.agent.utils.JsonUtils.parse(%s,%s,%s);" +
+                                         "}";
+                       method.insertBefore(String.format(mockCode, new Gson().toJson(data), "\""+className+"\"", "\""+methodName+"\""));
+                   }
+
                }
            }
 

@@ -36,7 +36,11 @@ public class FoxMockApp {
                     System.out.println(k + "\t" + v.getAddress());
                 });
             }
-
+            try {
+                userService.mockException();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             System.out.println("----------------------------------------");
             Thread.sleep(5000);
         }

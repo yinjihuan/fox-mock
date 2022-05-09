@@ -31,7 +31,7 @@ public class Bootstrap {
             String mockDataHttpUrl = config.getProperty("mockDataHttpUrl", "");
 
             if (Objects.isNull(foxMockAgentJarPath)) {
-                foxMockAgentJarPath = PathUtils.getAgentPath() + File.separator + "fox-mock-agent-3.0.jar";
+                foxMockAgentJarPath = PathUtils.getAgentPath() + File.separator + "fox-mock-agent-4.0.jar";
             }
 
             VirtualMachine attach = VirtualMachine.attach(String.valueOf(getPid()));
