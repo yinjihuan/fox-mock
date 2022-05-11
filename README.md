@@ -58,9 +58,11 @@ attach之前需要将mock的文件路径在agent.properties中指定。
 
 # 文档
 
-- [fox-mock本地单测时的数据mock方式](http://cxytiandi.com/blog/detail/36611)
-- [fox-mock测试环境联调时的数据mock方式](http://cxytiandi.com/blog/detail/36612)
-- [fox-mock对接配置中心管理mock数据](http://cxytiandi.com/blog/detail/36614)
+- [本地单测时的数据mock方式](http://cxytiandi.com/blog/detail/36611)
+- [测试环境联调时的数据mock方式](http://cxytiandi.com/blog/detail/36612)
+- [对接配置中心管理mock数据](http://cxytiandi.com/blog/detail/36614)
+- [mock指定的异常](http://cxytiandi.com/blog/detail/36617)
+- [使用ognl表达式mock指定场景](http://cxytiandi.com/blog/detail/36618)
 
 # 视频讲解
 
