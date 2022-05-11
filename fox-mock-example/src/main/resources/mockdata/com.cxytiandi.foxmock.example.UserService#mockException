@@ -1,0 +1,1 @@
+throw new com.cxytiandi.foxmock.example.MockException("mock exception");

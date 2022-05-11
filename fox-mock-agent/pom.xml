@@ -7,7 +7,7 @@
         <groupId>com.cxytiandi</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <version>3.0</version>
+    <version>4.0</version>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>fox-mock-agent</artifactId>
@@ -49,6 +49,11 @@
             <artifactId>logback-core</artifactId>
             <scope>provided</scope>
             <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>ognl</groupId>
+            <artifactId>ognl</artifactId>
         </dependency>
     </dependencies>
     <build>
@@ -100,6 +105,10 @@
                                     <pattern>ch.qos.logback</pattern>
                                     <shadedPattern>com.alibaba.arthas.deps.ch.qos.logback</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>ognl</pattern>
+                                    <shadedPattern>com.cxytiandi.foxmock.agent.ognl</shadedPattern>
+                                </relocation>
                             </relocations>
                             <artifactSet>
                                 <includes>
@@ -109,6 +118,7 @@
                                     <include>ch.qos.logback:logback-classic</include>
                                     <include>ch.qos.logback:logback-core</include>
                                     <include>com.alibaba.arthas:arthas-repackage-logger</include>
+                                    <include>ognl:ognl</include>
                                 </includes>
                             </artifactSet>
                             <filters>

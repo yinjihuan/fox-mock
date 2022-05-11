@@ -30,7 +30,7 @@ public class FoxMockAgentArgs {
      * mock方法白名单,如果文件夹中有多个方法会被全部mock,如果指定了此配置将只会mock这里指定的方法
      * 格式: com.xx.xxService#getName|com.xx.xxService#getAge
      */
-    private List<String> mockMethodWhiteList;
+    private List<String> mockMethodWhiteList = new ArrayList<>();
 
     /**
      * mock数据通过http请求获取

@@ -3,9 +3,11 @@ package com.cxytiandi.foxmock.agent.transformer;
 import com.alibaba.arthas.deps.org.slf4j.Logger;
 import com.alibaba.arthas.deps.org.slf4j.LoggerFactory;
 import com.cxytiandi.foxmock.agent.model.ClassInfo;
+import com.cxytiandi.foxmock.agent.model.MockInfo;
 import com.cxytiandi.foxmock.agent.storage.StorageHelper;
+import com.cxytiandi.foxmock.agent.utils.JsonUtils;
 import com.cxytiandi.foxmock.agent.utils.StringUtils;
-import com.google.gson.Gson;
+import javassist.CannotCompileException;
 import javassist.CtClass;
 import javassist.CtMethod;
 
@@ -59,11 +61,15 @@ public class MockClassFileTransformer implements ClassFileTransformer {
                String data = StorageHelper.get(key);
                if (Objects.nonNull(data)) {
                    match = true;
+                   MockInfo mockInfo = null;
                    LOG.info(String.format("mock methods %s, mock data is %s", key, data));
-                   String mockCode = "if(true){" +
-                                         "return ($r)com.cxytiandi.foxmock.agent.utils.JsonUtils.parse(%s,%s,%s);" +
-                                     "}";
-                   method.insertBefore(String.format(mockCode, new Gson().toJson(data), "\""+className+"\"", "\""+methodName+"\""));
+                   if (data.contains("f_mock_data") || data.contains("f_ognl_express")) {
+                       mockInfo = JsonUtils.fromJson(data, MockInfo.class);
+                   } else {
+                       mockInfo = new MockInfo();
+                       mockInfo.setMockData(data);
+                   }
+                   updateMethod(mockInfo, method, className, methodName);
                }
            }
 
@@ -78,5 +84,17 @@ public class MockClassFileTransformer implements ClassFileTransformer {
            LOG.error("transform {} error", className, e);
            throw new RuntimeException("transform error " + className, e);
        }
+    }
+
+    private void updateMethod(MockInfo mockInfo, CtMethod method, String className, String methodName) throws CannotCompileException {
+        if (mockInfo.getMockData().startsWith("throw new")) {
+            String mockCode = "if(com.cxytiandi.foxmock.agent.transformer.MethodInvokeFilter.filter($args,%s)){%s}";
+            method.insertBefore(String.format(mockCode, JsonUtils.toJson(mockInfo.getOgnlExpress()), mockInfo.getMockData()));
+        } else {
+            String mockCode = "if(com.cxytiandi.foxmock.agent.transformer.MethodInvokeFilter.filter($args,%s)){" +
+                                 "return ($r)com.cxytiandi.foxmock.agent.utils.JsonUtils.parse(%s,%s,%s);" +
+                              "}";
+            method.insertBefore(String.format(mockCode, JsonUtils.toJson(mockInfo.getOgnlExpress()), JsonUtils.toJson(mockInfo.getMockData()), "\""+className+"\"", "\""+methodName+"\""));
+        }
     }
 }
