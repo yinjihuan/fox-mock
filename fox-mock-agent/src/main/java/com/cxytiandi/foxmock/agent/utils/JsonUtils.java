@@ -16,6 +16,10 @@ import java.lang.reflect.Type;
  */
 public class JsonUtils {
 
+    private static Gson gson = new Gson();
+
+    private JsonUtils() {}
+
     public static Object parse(String data, String className, String methodName) {
        try {
            Type genericReturnType = null;
@@ -28,11 +32,18 @@ public class JsonUtils {
                }
            }
 
-           Gson gson = new Gson();
            Object value = gson.fromJson(data, genericReturnType);
            return value;
        } catch (Exception e) {
            throw new RuntimeException(e);
        }
+    }
+
+    public static String toJson(Object src) {
+        return gson.toJson(src);
+    }
+
+    public static <T> T fromJson(String json, Class<T> classOfT) {
+        return gson.fromJson(json, classOfT);
     }
 }

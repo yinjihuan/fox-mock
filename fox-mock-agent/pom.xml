@@ -50,6 +50,11 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
+
+        <dependency>
+            <groupId>ognl</groupId>
+            <artifactId>ognl</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -100,6 +105,10 @@
                                     <pattern>ch.qos.logback</pattern>
                                     <shadedPattern>com.alibaba.arthas.deps.ch.qos.logback</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>ognl</pattern>
+                                    <shadedPattern>com.cxytiandi.foxmock.agent.ognl</shadedPattern>
+                                </relocation>
                             </relocations>
                             <artifactSet>
                                 <includes>
@@ -109,6 +118,7 @@
                                     <include>ch.qos.logback:logback-classic</include>
                                     <include>ch.qos.logback:logback-core</include>
                                     <include>com.alibaba.arthas:arthas-repackage-logger</include>
+                                    <include>ognl:ognl</include>
                                 </includes>
                             </artifactSet>
                             <filters>

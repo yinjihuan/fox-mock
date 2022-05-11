@@ -20,13 +20,15 @@ public class FoxMockApp {
 
         while (true) {
             UserService userService = new UserService();
-            System.out.println(String.format("你好 %s", userService.getName2().getId()));
-            System.out.println(String.format("你好 %s", userService.getAge()));
-            System.out.println(String.format("你好 %s", userService.getAddrs()));
-            System.out.println(String.format("你好 %s", userService.getUsers()));
-            System.out.println(String.format("你好 %s", userService.getUsers2()));
-            System.out.println(String.format("你好 %s", userService.getUser()));
-            System.out.println(String.format("你好 %s", userService.getUserDetail()));
+            UserService.UserReq userReq = new UserService.UserReq();
+            userReq.setId(2);
+            System.out.println(String.format("你好 getName2 %s", userService.getName2(userReq).getId()));
+            System.out.println(String.format("你好 getAge %s", userService.getAge()));
+            System.out.println(String.format("你好 getAddrs %s", userService.getAddrs()));
+            System.out.println(String.format("你好 getUsers %s", userService.getUsers()));
+            System.out.println(String.format("你好 getUsers2 %s", userService.getUsers2()));
+            System.out.println(String.format("你好 getUser %s", userService.getUser()));
+            System.out.println(String.format("你好 getUserDetail %s", userService.getUserDetail()));
             // 泛型测试
             Result<UserDetail> userDetailResult = userService.getUserDetail();
             UserDetail userDetail = userDetailResult.getData();
@@ -37,7 +39,7 @@ public class FoxMockApp {
                 });
             }
             try {
-                userService.mockException();
+                userService.mockException("yjh");
             } catch (Exception e) {
                 e.printStackTrace();
             }

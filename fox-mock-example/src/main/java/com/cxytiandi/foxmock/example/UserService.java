@@ -12,7 +12,7 @@ import java.util.List;
  * @时间 2022-04-20 00:25
  */
 public class UserService {
-    public UserInfo getName2() {
+    public UserInfo getName2(UserReq req) {
         return new UserInfo();
     }
 
@@ -44,7 +44,19 @@ public class UserService {
         return result;
     }
 
-    public void mockException() {
+    public void mockException(String name) {
 
+    }
+
+    public static class UserReq {
+        private int id;
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
     }
 }

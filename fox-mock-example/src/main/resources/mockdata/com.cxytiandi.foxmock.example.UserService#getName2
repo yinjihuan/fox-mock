@@ -1,1 +1,4 @@
-{"id":1001}
+{
+	"f_mock_data": "{\"id\":1001}",
+	"f_ognl_express": "#p0.id.equals(2)"
+}
