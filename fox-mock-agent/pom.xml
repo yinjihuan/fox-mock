@@ -55,12 +55,6 @@
             <groupId>ognl</groupId>
             <artifactId>ognl</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.5.6</version>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -115,10 +109,6 @@
                                     <pattern>ognl</pattern>
                                     <shadedPattern>com.cxytiandi.foxmock.agent.ognl</shadedPattern>
                                 </relocation>
-                                <relocation>
-                                    <pattern>org.mybatis</pattern>
-                                    <shadedPattern>com.cxytiandi.foxmock.agent.mybatis</shadedPattern>
-                                </relocation>
                             </relocations>
                             <artifactSet>
                                 <includes>
@@ -129,7 +119,6 @@
                                     <include>ch.qos.logback:logback-core</include>
                                     <include>com.alibaba.arthas:arthas-repackage-logger</include>
                                     <include>ognl:ognl</include>
-                                    <include>org.mybatis:mybatis</include>
                                 </includes>
                             </artifactSet>
                             <filters>

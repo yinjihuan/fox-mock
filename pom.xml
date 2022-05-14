@@ -23,6 +23,7 @@
         <logback-classic.version>1.2.11</logback-classic.version>
         <logback-core.version>1.2.11</logback-core.version>
         <ognl.version>3.1.19</ognl.version>
+        <mybatis.version>3.5.6</mybatis.version>
     </properties>
 
     <dependencyManagement>
@@ -64,6 +65,11 @@
                 <groupId>ognl</groupId>
                 <artifactId>ognl</artifactId>
                 <version>${ognl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis</artifactId>
+                <version>${mybatis.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
