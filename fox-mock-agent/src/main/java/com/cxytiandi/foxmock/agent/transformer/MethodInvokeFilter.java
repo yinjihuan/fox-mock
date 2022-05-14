@@ -5,7 +5,16 @@ import com.alibaba.arthas.deps.org.slf4j.LoggerFactory;
 import com.cxytiandi.foxmock.agent.express.Express;
 import com.cxytiandi.foxmock.agent.express.OgnlExpressException;
 import com.cxytiandi.foxmock.agent.express.ExpressFactory;
+import com.cxytiandi.foxmock.agent.storage.StorageHelper;
+import com.cxytiandi.foxmock.agent.utils.JsonUtils;
+import com.cxytiandi.foxmock.agent.utils.ReflectionUtils;
 import com.cxytiandi.foxmock.agent.utils.StringUtils;
+import org.apache.ibatis.mapping.MappedStatement;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 方法执行过滤
@@ -39,5 +48,40 @@ public class MethodInvokeFilter {
         }
 
         return false;
+    }
+
+    public static Object filterAndConvertDataByMybatisQuery(Object[] args) {
+        Object obj = filterAndConvertData(args);
+        // 集合直接返回
+        if (obj instanceof List) {
+           return obj;
+        }
+
+        // 非集合包装成集合返回，因为org.apache.ibatis.executor.BaseExecutor.query返回的是集合
+        List<Object> objs = new ArrayList<>();
+        objs.add(obj);
+        return objs;
+    }
+
+    public static Object filterAndConvertDataByMybatisUpdate(Object[] args) {
+        return filterAndConvertData(args);
+    }
+
+    private static Object filterAndConvertData(Object[] args) {
+        MappedStatement ms = (MappedStatement) args[0];
+
+        String msId = ms.getId();
+        String className = msId.substring(0, msId.lastIndexOf("."));
+        String methodName = msId.substring(msId.lastIndexOf(".") + 1);
+        String key = String.format("%s#%s", className, methodName);
+
+        String data = StorageHelper.get(key);
+        if (Objects.isNull(data)) {
+            return null;
+        }
+
+        Type genericReturnType = ReflectionUtils.getGenericReturnType(className, methodName);
+        Object obj = JsonUtils.parseByType(data, genericReturnType);
+        return obj;
     }
 }

@@ -2,9 +2,11 @@ package com.cxytiandi.foxmock.agent;
 
 import com.alibaba.arthas.deps.org.slf4j.Logger;
 import com.alibaba.arthas.deps.org.slf4j.LoggerFactory;
+import com.cxytiandi.foxmock.agent.constant.FoxMockConstant;
 import com.cxytiandi.foxmock.agent.model.FoxMockAgentArgs;
 import com.cxytiandi.foxmock.agent.storage.StorageHelper;
 import com.cxytiandi.foxmock.agent.transformer.MockClassFileTransformer;
+
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
 import java.util.Set;
@@ -96,6 +98,8 @@ public class FoxMockAgent {
             inst.addTransformer(mockClassFileTransformer, true);
         }
 
+        preLoadClass();
+
         Set<String> mockClassNames = StorageHelper.getMockClassNames();
         Class[] allLoadedClasses = inst.getAllLoadedClasses();
         for (Class clz : allLoadedClasses) {
@@ -111,5 +115,20 @@ public class FoxMockAgent {
         }
 
         LOG.info("foxMock agent run completely");
+    }
+
+    private static void preLoadClass() {
+        try {
+            Class.forName(FoxMockConstant.IBATIS_BASE_EXECUTOR);
+        } catch (ClassNotFoundException e) {
+            LOG.warn("{} ClassNotFoundException", FoxMockConstant.IBATIS_BASE_EXECUTOR);
+        }
+
+        try {
+            Class.forName(FoxMockConstant.IBATIS_CACHING_EXECUTOR);
+        } catch (ClassNotFoundException e) {
+            LOG.warn("{} ClassNotFoundException", FoxMockConstant.IBATIS_CACHING_EXECUTOR);
+        }
+
     }
 }

@@ -114,7 +114,7 @@ public class LocalFileStorage implements Storage {
                     String key = path.getFileName().toString();
                     Long lastModified = mockDataLastModified.get(key);
                     // 文件有改变
-                    if (Objects.nonNull(lastModified) && !lastModified.equals(path.toFile().lastModified())) {
+                    if (Objects.isNull(lastModified) || !lastModified.equals(path.toFile().lastModified())) {
                         isModified.compareAndSet(false, true);
                     }
                 });

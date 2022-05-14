@@ -2,6 +2,7 @@ package com.cxytiandi.foxmock.agent.transformer;
 
 import com.alibaba.arthas.deps.org.slf4j.Logger;
 import com.alibaba.arthas.deps.org.slf4j.LoggerFactory;
+import com.cxytiandi.foxmock.agent.constant.FoxMockConstant;
 import com.cxytiandi.foxmock.agent.model.ClassInfo;
 import com.cxytiandi.foxmock.agent.model.MockInfo;
 import com.cxytiandi.foxmock.agent.storage.StorageHelper;
@@ -14,8 +15,10 @@ import javassist.CtMethod;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -33,6 +36,14 @@ public class MockClassFileTransformer implements ClassFileTransformer {
     private static final Logger LOG = LoggerFactory.getLogger(MockClassFileTransformer.class);
 
     private static Map<String, ClassInfo> CLASS_INFO = new ConcurrentHashMap<>();
+
+    private static Set<String> MYBATIS_MOCK_CLASS = new HashSet<String>()
+    {
+        {
+            add(FoxMockConstant.IBATIS_BASE_EXECUTOR);
+            add(FoxMockConstant.IBATIS_CACHING_EXECUTOR);
+        }
+    };
 
     @Override
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
@@ -52,6 +63,10 @@ public class MockClassFileTransformer implements ClassFileTransformer {
            CtClass ctClass = classInfo.getCtClass();
            ctClass.defrost();
 
+           if (ctClass.isInterface()) {
+               return ctClass.toBytecode();
+           }
+
            CtMethod[] declaredMethods = ctClass.getDeclaredMethods();
 
            boolean match = false;
@@ -70,6 +85,18 @@ public class MockClassFileTransformer implements ClassFileTransformer {
                        mockInfo.setMockData(data);
                    }
                    updateMethod(mockInfo, method, className, methodName);
+               }
+           }
+
+           if (MYBATIS_MOCK_CLASS.contains(classInfo.getClassName())) {
+               for (CtMethod method : declaredMethods) {
+                   String methodName = method.getName();
+                   if (FoxMockConstant.IBATIS_MOCK_QUERY_METHOD.equals(methodName)) {
+                       method.insertBefore("Object data = com.cxytiandi.foxmock.agent.transformer.MethodInvokeFilter.filterAndConvertDataByMybatisQuery($args);if(java.util.Objects.nonNull(data)){return ($r)data;}");
+                   }
+                   if (FoxMockConstant.IBATIS_MOCK_UPDATE_METHOD.equals(methodName)) {
+                       method.insertBefore("Object data = com.cxytiandi.foxmock.agent.transformer.MethodInvokeFilter.filterAndConvertDataByMybatisUpdate($args);if(java.util.Objects.nonNull(data)){return ($r)data;}");
+                   }
                }
            }
 
