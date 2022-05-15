@@ -5,14 +5,19 @@ import com.alibaba.arthas.deps.org.slf4j.LoggerFactory;
 import com.cxytiandi.foxmock.agent.express.Express;
 import com.cxytiandi.foxmock.agent.express.OgnlExpressException;
 import com.cxytiandi.foxmock.agent.express.ExpressFactory;
+import com.cxytiandi.foxmock.agent.factory.MockInfoFactory;
+import com.cxytiandi.foxmock.agent.model.MockInfo;
 import com.cxytiandi.foxmock.agent.storage.StorageHelper;
 import com.cxytiandi.foxmock.agent.utils.JsonUtils;
 import com.cxytiandi.foxmock.agent.utils.ReflectionUtils;
 import com.cxytiandi.foxmock.agent.utils.StringUtils;
+import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.ParameterMapping;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,6 +57,10 @@ public class MethodInvokeFilter {
 
     public static Object filterAndConvertDataByMybatisQuery(Object[] args) {
         Object obj = filterAndConvertData(args);
+        if (obj == null) {
+            return null;
+        }
+
         // 集合直接返回
         if (obj instanceof List) {
            return obj;
@@ -69,6 +78,7 @@ public class MethodInvokeFilter {
 
     private static Object filterAndConvertData(Object[] args) {
         MappedStatement ms = (MappedStatement) args[0];
+        Object parameterObject = args[1];
 
         String msId = ms.getId();
         String className = msId.substring(0, msId.lastIndexOf("."));
@@ -80,8 +90,24 @@ public class MethodInvokeFilter {
             return null;
         }
 
-        Type genericReturnType = ReflectionUtils.getGenericReturnType(className, methodName);
-        Object obj = JsonUtils.parseByType(data, genericReturnType);
-        return obj;
+        List<Object> argsList = new ArrayList<>();
+        BoundSql boundSql = ms.getBoundSql(parameterObject);
+        List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
+
+        for (ParameterMapping mapping : parameterMappings) {
+            HashMap parameterMap = (HashMap) parameterObject;
+            Object value = parameterMap.get(mapping.getProperty());
+            argsList.add(value);
+        }
+
+        MockInfo mockInfo = MockInfoFactory.create(data);
+        boolean filter = filter(argsList.toArray(new Object[argsList.size()]), mockInfo.getOgnlExpress());
+        if (filter) {
+            Type genericReturnType = ReflectionUtils.getGenericReturnType(className, methodName);
+            Object obj = JsonUtils.parseByType(mockInfo.getMockData(), genericReturnType);
+            return obj;
+        }
+
+        return null;
     }
 }

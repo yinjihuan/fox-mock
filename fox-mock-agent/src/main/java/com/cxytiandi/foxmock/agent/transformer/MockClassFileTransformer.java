@@ -3,6 +3,7 @@ package com.cxytiandi.foxmock.agent.transformer;
 import com.alibaba.arthas.deps.org.slf4j.Logger;
 import com.alibaba.arthas.deps.org.slf4j.LoggerFactory;
 import com.cxytiandi.foxmock.agent.constant.FoxMockConstant;
+import com.cxytiandi.foxmock.agent.factory.MockInfoFactory;
 import com.cxytiandi.foxmock.agent.model.ClassInfo;
 import com.cxytiandi.foxmock.agent.model.MockInfo;
 import com.cxytiandi.foxmock.agent.storage.StorageHelper;
@@ -76,14 +77,8 @@ public class MockClassFileTransformer implements ClassFileTransformer {
                String data = StorageHelper.get(key);
                if (Objects.nonNull(data)) {
                    match = true;
-                   MockInfo mockInfo = null;
                    LOG.info(String.format("mock methods %s, mock data is %s", key, data));
-                   if (data.contains("f_mock_data") || data.contains("f_ognl_express")) {
-                       mockInfo = JsonUtils.fromJson(data, MockInfo.class);
-                   } else {
-                       mockInfo = new MockInfo();
-                       mockInfo.setMockData(data);
-                   }
+                   MockInfo mockInfo = MockInfoFactory.create(data);
                    updateMethod(mockInfo, method, className, methodName);
                }
            }
@@ -92,9 +87,11 @@ public class MockClassFileTransformer implements ClassFileTransformer {
                for (CtMethod method : declaredMethods) {
                    String methodName = method.getName();
                    if (FoxMockConstant.IBATIS_MOCK_QUERY_METHOD.equals(methodName)) {
+                       LOG.info("mock mybatis query method");
                        method.insertBefore("Object data = com.cxytiandi.foxmock.agent.transformer.MethodInvokeFilter.filterAndConvertDataByMybatisQuery($args);if(java.util.Objects.nonNull(data)){return ($r)data;}");
                    }
                    if (FoxMockConstant.IBATIS_MOCK_UPDATE_METHOD.equals(methodName)) {
+                       LOG.info("mock mybatis update method");
                        method.insertBefore("Object data = com.cxytiandi.foxmock.agent.transformer.MethodInvokeFilter.filterAndConvertDataByMybatisUpdate($args);if(java.util.Objects.nonNull(data)){return ($r)data;}");
                    }
                }

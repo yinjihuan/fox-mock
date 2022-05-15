@@ -1,7 +1,6 @@
 package com.cxytiandi.foxmock.agent.utils;
 
 import com.google.gson.Gson;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 /**
