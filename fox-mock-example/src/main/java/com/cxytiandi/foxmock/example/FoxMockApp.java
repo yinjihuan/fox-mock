@@ -1,7 +1,12 @@
 package com.cxytiandi.foxmock.example;
 
+import com.cxytiandi.foxmock.example.mybatis.UserMapper;
+import com.cxytiandi.foxmock.example.mybatis.UserQuery;
+import com.google.gson.Gson;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
 import java.util.Map;
 import java.util.Objects;
 
@@ -13,6 +18,7 @@ import java.util.Objects;
  * @作者介绍 http://cxytiandi.com/about
  * @时间 2022-04-18 22:11
  */
+@EnableTransactionManagement
 @SpringBootApplication
 public class FoxMockApp {
     public static void main(String[] args) throws Exception {
@@ -43,6 +49,14 @@ public class FoxMockApp {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            UserMapper mapper = ApplicationContextHelper.getBean(UserMapper.class);
+            System.out.println("mapper find:" + new Gson().toJson(mapper.find()));
+            System.out.println("mapper find2:" + new Gson().toJson(mapper.find2(new UserQuery(1))));
+            System.out.println("mapper findById:" + new Gson().toJson(mapper.findById(1)));
+            System.out.println("mapper findNameById:" + mapper.findNameById(1));
+            System.out.println("mapper updateNameById:" + mapper.updateNameById(1, "张三"));
+
             System.out.println("----------------------------------------");
             Thread.sleep(5000);
         }

@@ -1,7 +1,6 @@
 package com.cxytiandi.foxmock.agent.utils;
 
 import com.google.gson.Gson;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 /**
@@ -22,21 +21,21 @@ public class JsonUtils {
 
     public static Object parse(String data, String className, String methodName) {
        try {
-           Type genericReturnType = null;
-           Class<?> clazz = Class.forName(className.replace('/','.'));
-           Method[] declaredMethods = clazz.getDeclaredMethods();
-           for (Method m: declaredMethods) {
-               if (m.getName().equals(methodName)){
-                   genericReturnType = m.getGenericReturnType();
-                   break;
-               }
-           }
-
+           Type genericReturnType = ReflectionUtils.getGenericReturnType(className, methodName);
            Object value = gson.fromJson(data, genericReturnType);
            return value;
        } catch (Exception e) {
            throw new RuntimeException(e);
        }
+    }
+
+    public static Object parseByType(String data, Type genericReturnType) {
+        try {
+            Object value = gson.fromJson(data, genericReturnType);
+            return value;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static String toJson(Object src) {

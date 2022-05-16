@@ -1,5 +1,6 @@
 package com.cxytiandi.foxmock.agent.storage;
 
+import com.cxytiandi.foxmock.agent.constant.FoxMockConstant;
 import com.cxytiandi.foxmock.agent.model.FoxMockAgentArgs;
 
 import java.util.*;
@@ -67,6 +68,8 @@ public class StorageHelper {
         }).flatMap(Set::stream).collect(Collectors.toSet());
 
         allMockClassNames.addAll(mockClassNames);
+        allMockClassNames.add(FoxMockConstant.IBATIS_BASE_EXECUTOR);
+        allMockClassNames.add(FoxMockConstant.IBATIS_CACHING_EXECUTOR);
         return allMockClassNames;
     }
 }

@@ -1,5 +1,6 @@
 package com.cxytiandi.foxmock.agent.model;
 
+import com.cxytiandi.foxmock.agent.utils.ClassUtils;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.LoaderClassPath;
@@ -15,7 +16,7 @@ public class ClassInfo {
 
 
     public ClassInfo(String className, byte[] classFileBuffer, ClassLoader loader) {
-        this.className = formatClassName(className);
+        this.className = ClassUtils.formatClassName(className);
         this.classFileBuffer = classFileBuffer;
         this.loader = loader;
     }
@@ -57,10 +58,6 @@ public class ClassInfo {
 
     public ClassLoader getClassLoader() {
         return loader;
-    }
-
-    private static String formatClassName(String className) {
-        return className.replace('/', '.');
     }
 
     public byte[] getClassFileBuffer() {
