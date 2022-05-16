@@ -20,4 +20,7 @@ public interface UserMapper {
     @Update("update t_user set name = #{name} where id = #{id}")
     int updateNameById(@Param("id") Integer id, @Param("name") String name);
 
+    @Select("select * from t_user where id = #{id}")
+    List<User> find2(UserQuery query);
+
 }

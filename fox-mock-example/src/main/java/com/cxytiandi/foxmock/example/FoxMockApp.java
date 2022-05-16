@@ -1,6 +1,7 @@
 package com.cxytiandi.foxmock.example;
 
 import com.cxytiandi.foxmock.example.mybatis.UserMapper;
+import com.cxytiandi.foxmock.example.mybatis.UserQuery;
 import com.google.gson.Gson;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -51,6 +52,7 @@ public class FoxMockApp {
 
             UserMapper mapper = ApplicationContextHelper.getBean(UserMapper.class);
             System.out.println("mapper find:" + new Gson().toJson(mapper.find()));
+            System.out.println("mapper find2:" + new Gson().toJson(mapper.find2(new UserQuery(1))));
             System.out.println("mapper findById:" + new Gson().toJson(mapper.findById(1)));
             System.out.println("mapper findNameById:" + mapper.findNameById(1));
             System.out.println("mapper updateNameById:" + mapper.updateNameById(1, "张三"));

@@ -95,9 +95,13 @@ public class MethodInvokeFilter {
         List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
 
         for (ParameterMapping mapping : parameterMappings) {
-            HashMap parameterMap = (HashMap) parameterObject;
-            Object value = parameterMap.get(mapping.getProperty());
-            argsList.add(value);
+            if (parameterObject instanceof HashMap) {
+                HashMap parameterMap = (HashMap) parameterObject;
+                Object value = parameterMap.get(mapping.getProperty());
+                argsList.add(value);
+            } else {
+                argsList.add(parameterObject);
+            }
         }
 
         MockInfo mockInfo = MockInfoFactory.create(data);

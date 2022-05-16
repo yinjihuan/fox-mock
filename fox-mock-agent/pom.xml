@@ -59,7 +59,10 @@
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
+
     </dependencies>
     <build>
         <plugins>
@@ -125,7 +128,6 @@
                                     <include>ch.qos.logback:logback-core</include>
                                     <include>com.alibaba.arthas:arthas-repackage-logger</include>
                                     <include>ognl:ognl</include>
-                                    <include>org.mybatis:mybatis</include>
                                 </includes>
                             </artifactSet>
                             <filters>
