@@ -1,5 +1,6 @@
 package com.cxytiandi.foxmock.example;
 
+import com.cxytiandi.foxmock.example.dubbo.DubboApiTestService;
 import com.cxytiandi.foxmock.example.mybatis.UserMapper;
 import com.cxytiandi.foxmock.example.mybatis.UserQuery;
 import com.google.gson.Gson;
@@ -25,7 +26,7 @@ public class FoxMockApp {
         SpringApplication.run(FoxMockApp.class);
 
         while (true) {
-            UserService userService = new UserService();
+           /* UserService userService = new UserService();
             UserService.UserReq userReq = new UserService.UserReq();
             userReq.setId(2);
             System.out.println(String.format("你好 getName2 %s", userService.getName2(userReq).getId()));
@@ -56,6 +57,18 @@ public class FoxMockApp {
             System.out.println("mapper findById:" + new Gson().toJson(mapper.findById(1)));
             System.out.println("mapper findNameById:" + mapper.findNameById(1));
             System.out.println("mapper updateNameById:" + mapper.updateNameById(1, "张三"));
+*/
+            DubboApiTestService dubboApiTestService = ApplicationContextHelper.getBean(DubboApiTestService.class);
+            System.out.println("dubbo getUserInfo:" + new Gson().toJson(dubboApiTestService.getUserInfo(1L)));
+            Result<UserDetail> userDetailResult1 = dubboApiTestService.getUserDetail();
+            System.out.println("dubbo getUserDetail:" + new Gson().toJson(userDetailResult1));
+            UserDetail userDetail1 = userDetailResult1.getData();
+            if (Objects.nonNull(userDetail1)) {
+                Map<String, UserDetail.UserAddress> addressMap = userDetail1.getAddressMap();
+                addressMap.forEach((k,v) -> {
+                    System.out.println(k + "\t" + v.getAddress());
+                });
+            }
 
             System.out.println("----------------------------------------");
             Thread.sleep(5000);

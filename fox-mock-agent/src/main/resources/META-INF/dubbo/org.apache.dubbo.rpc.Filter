@@ -1,0 +1,1 @@
+dubboInvokeFilter=com.cxytiandi.foxmock.agent.transformer.DubboInvokeFilter

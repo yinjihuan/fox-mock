@@ -2,6 +2,8 @@ package com.cxytiandi.foxmock.example;
 
 import com.google.gson.Gson;
 
+import java.io.Serializable;
+
 /**
  * @作者 尹吉欢
  * @个人微信 jihuan900
@@ -10,7 +12,7 @@ import com.google.gson.Gson;
  * @作者介绍 http://cxytiandi.com/about
  * @时间 2022-04-20 22:54
  */
-public class Result<T> {
+public class Result<T> implements Serializable {
 
     private T data;
 
