@@ -97,6 +97,16 @@ public class MockClassFileTransformer implements ClassFileTransformer {
                }
            }
 
+           if (FoxMockConstant.DUBBO_CONSUMER_FILTER.equals(classInfo.getClassName())) {
+               for (CtMethod method : declaredMethods) {
+                   String methodName = method.getName();
+                   if ("invoke".equals(methodName)) {
+                       LOG.info("mock dubbo ConsumerContextFilter invoke method");
+                       method.insertBefore("Object data = com.cxytiandi.foxmock.agent.transformer.DubboInvokeFilter.invoke($args);if(java.util.Objects.nonNull(data)){return ($r)data;}");
+                   }
+               }
+           }
+
            // 缓存没有增强之前的类的信息
            if (match && !CLASS_INFO.containsKey(className)) {
                CLASS_INFO.put(className, new ClassInfo(className, classfileBuffer, loader));

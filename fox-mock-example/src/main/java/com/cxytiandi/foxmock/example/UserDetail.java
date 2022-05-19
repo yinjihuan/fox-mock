@@ -1,5 +1,6 @@
 package com.cxytiandi.foxmock.example;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Map;
  * @作者介绍 http://cxytiandi.com/about
  * @时间 2022-04-28 21:54
  */
-public class UserDetail {
+public class UserDetail implements Serializable {
 
     private String name;
 
@@ -32,7 +33,7 @@ public class UserDetail {
         return addressMap;
     }
 
-    public static class UserAddress {
+    public static class UserAddress implements Serializable {
         private String address;
 
         public void setAddress(String address) {

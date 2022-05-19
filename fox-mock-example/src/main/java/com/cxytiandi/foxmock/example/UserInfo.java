@@ -1,5 +1,7 @@
 package com.cxytiandi.foxmock.example;
 
+import java.io.Serializable;
+
 /**
  * @作者 尹吉欢
  * @个人微信 jihuan900
@@ -8,7 +10,7 @@ package com.cxytiandi.foxmock.example;
  * @作者介绍 http://cxytiandi.com/about
  * @时间 2022-04-20 00:15
  */
-public class UserInfo {
+public class UserInfo implements Serializable {
     private int id;
 
     public void setId(int id) {

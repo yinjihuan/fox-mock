@@ -34,7 +34,7 @@ import java.util.Objects;
  */
 public class MethodInvokeFilter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MockClassFileTransformer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MethodInvokeFilter.class);
 
     public static boolean filter(Object[] args, String express) {
         if (args.length == 0 || StringUtils.isBlank(express)) {
@@ -107,6 +107,7 @@ public class MethodInvokeFilter {
         MockInfo mockInfo = MockInfoFactory.create(data);
         boolean filter = filter(argsList.toArray(new Object[argsList.size()]), mockInfo.getOgnlExpress());
         if (filter) {
+            LOG.info(String.format("mock methods %s, mock data is %s", key, data));
             Type genericReturnType = ReflectionUtils.getGenericReturnType(className, methodName);
             Object obj = JsonUtils.parseByType(mockInfo.getMockData(), genericReturnType);
             return obj;
