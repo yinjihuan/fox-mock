@@ -63,7 +63,7 @@ attach之前需要将mock的文件路径在agent.properties中指定。
 - [对接配置中心管理mock数据](http://cxytiandi.com/blog/detail/36614)
 - [mock指定的异常](http://cxytiandi.com/blog/detail/36617)
 - [使用ognl表达式mock指定场景](http://cxytiandi.com/blog/detail/36618)
-- [接口（interface）如何mock]（http://cxytiandi.com/blog/detail/36621）
+- [接口（interface）如何mock](http://cxytiandi.com/blog/detail/36621)
 
 # 视频讲解
 
