@@ -21,15 +21,13 @@ import java.util.Objects;
  * @作者介绍 http://cxytiandi.com/about
  * @时间 2022-05-18 22:42
  */
-@Activate(
-        group = {"consumer"}
-)
-public class DubboInvokeFilter implements Filter {
+public class DubboInvokeFilter {
 
     private static final Logger LOG = LoggerFactory.getLogger(DubboInvokeFilter.class);
 
-    @Override
-    public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
+    public static Result invoke(Object[] args) throws RpcException {
+        Invoker<?> invoker = (Invoker<?>) args[0];
+        Invocation invocation = (Invocation) args[1];
         String className = invoker.getInterface().getName();
         String methodName = invocation.getMethodName();
         String key = String.format("%s#%s", className, methodName);
@@ -44,7 +42,8 @@ public class DubboInvokeFilter implements Filter {
                 return AsyncRpcResult.newDefaultAsyncResult(value, invocation);
             }
         }
-        return invoker.invoke(invocation);
+
+        return null;
     }
 
 }
