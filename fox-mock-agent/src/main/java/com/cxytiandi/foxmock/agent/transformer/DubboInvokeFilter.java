@@ -7,7 +7,6 @@ import com.cxytiandi.foxmock.agent.model.MockInfo;
 import com.cxytiandi.foxmock.agent.storage.StorageHelper;
 import com.cxytiandi.foxmock.agent.utils.JsonUtils;
 import com.cxytiandi.foxmock.agent.utils.ReflectionUtils;
-import org.apache.dubbo.common.extension.Activate;
 import org.apache.dubbo.rpc.*;
 
 import java.lang.reflect.Type;
