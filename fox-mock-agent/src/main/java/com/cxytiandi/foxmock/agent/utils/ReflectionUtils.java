@@ -1,5 +1,6 @@
 package com.cxytiandi.foxmock.agent.utils;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Objects;
@@ -31,5 +32,11 @@ public class ReflectionUtils {
         }
 
         return genericReturnType;
+    }
+
+    public static Object getFieldValue(String fieldName, Class<?> clz, Object target) throws Throwable {
+        Field field = clz.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return field.get(target);
     }
 }

@@ -37,7 +37,7 @@ public class MethodInvokeFilter {
     private static final Logger LOG = LoggerFactory.getLogger(MethodInvokeFilter.class);
 
     public static boolean filter(Object[] args, String express) {
-        if (args.length == 0 || StringUtils.isBlank(express)) {
+        if (args == null || args.length == 0 || StringUtils.isBlank(express)) {
             return true;
         }
 

@@ -129,6 +129,5 @@ public class FoxMockAgent {
         } catch (ClassNotFoundException e) {
             LOG.warn("{} ClassNotFoundException", FoxMockConstant.IBATIS_CACHING_EXECUTOR);
         }
-
     }
 }

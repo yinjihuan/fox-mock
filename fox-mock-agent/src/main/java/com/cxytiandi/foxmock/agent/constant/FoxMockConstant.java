@@ -13,6 +13,7 @@ public class FoxMockConstant {
     public static final String IBATIS_BASE_EXECUTOR = "org.apache.ibatis.executor.BaseExecutor";
     public static final String IBATIS_CACHING_EXECUTOR = "org.apache.ibatis.executor.CachingExecutor";
     public static final String DUBBO_CONSUMER_FILTER = "org.apache.dubbo.rpc.filter.ConsumerContextFilter";
+    public static final String FEIGN_METHOD_HANDLER = "feign.SynchronousMethodHandler";
 
     public static final String IBATIS_MOCK_QUERY_METHOD = "query";
     public static final String IBATIS_MOCK_UPDATE_METHOD = "update";

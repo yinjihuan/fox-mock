@@ -1,11 +1,13 @@
 package com.cxytiandi.foxmock.example;
 
 import com.cxytiandi.foxmock.example.dubbo.DubboApiTestService;
+import com.cxytiandi.foxmock.example.feign.FeignApiTestService;
 import com.cxytiandi.foxmock.example.mybatis.UserMapper;
 import com.cxytiandi.foxmock.example.mybatis.UserQuery;
 import com.google.gson.Gson;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.Map;
@@ -19,6 +21,7 @@ import java.util.Objects;
  * @作者介绍 http://cxytiandi.com/about
  * @时间 2022-04-18 22:11
  */
+@EnableFeignClients(basePackages = "com.cxytiandi.foxmock.example.feign")
 @EnableTransactionManagement
 @SpringBootApplication
 public class FoxMockApp {
@@ -63,6 +66,18 @@ public class FoxMockApp {
             Result<UserDetail> userDetailResult1 = dubboApiTestService.getUserDetail();
             System.out.println("dubbo getUserDetail:" + new Gson().toJson(userDetailResult1));
             UserDetail userDetail1 = userDetailResult1.getData();
+            if (Objects.nonNull(userDetail1)) {
+                Map<String, UserDetail.UserAddress> addressMap = userDetail1.getAddressMap();
+                addressMap.forEach((k,v) -> {
+                    System.out.println(k + "\t" + v.getAddress());
+                });
+            }
+
+            FeignApiTestService feignApiTestService = ApplicationContextHelper.getBean(FeignApiTestService.class);
+            System.out.println("feign getUserInfo:" + new Gson().toJson(feignApiTestService.getUserInfo(1L)));
+            userDetailResult1 = feignApiTestService.getUserDetail();
+            System.out.println("feign getUserDetail:" + new Gson().toJson(userDetailResult1));
+            userDetail1 = userDetailResult1.getData();
             if (Objects.nonNull(userDetail1)) {
                 Map<String, UserDetail.UserAddress> addressMap = userDetail1.getAddressMap();
                 addressMap.forEach((k,v) -> {
