@@ -71,6 +71,7 @@ public class StorageHelper {
         allMockClassNames.add(FoxMockConstant.IBATIS_BASE_EXECUTOR);
         allMockClassNames.add(FoxMockConstant.IBATIS_CACHING_EXECUTOR);
         allMockClassNames.add(FoxMockConstant.DUBBO_CONSUMER_FILTER);
+        allMockClassNames.add(FoxMockConstant.FEIGN_METHOD_HANDLER);
         return allMockClassNames;
     }
 }

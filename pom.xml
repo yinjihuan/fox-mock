@@ -25,6 +25,7 @@
         <ognl.version>3.1.19</ognl.version>
         <mybatis.version>3.5.6</mybatis.version>
         <dubbo.version>2.7.3</dubbo.version>
+        <feign.version>10.2.3</feign.version>
     </properties>
 
     <dependencyManagement>
@@ -72,11 +73,19 @@
                 <artifactId>mybatis</artifactId>
                 <version>${mybatis.version}</version>
             </dependency>
+
             <!-- Dubbo -->
             <dependency>
                 <groupId>org.apache.dubbo</groupId>
                 <artifactId>dubbo</artifactId>
                 <version>${dubbo.version}</version>
+            </dependency>
+
+            <!-- Feign -->
+            <dependency>
+                <groupId>io.github.openfeign</groupId>
+                <artifactId>feign-core</artifactId>
+                <version>${feign.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -107,6 +107,17 @@ public class MockClassFileTransformer implements ClassFileTransformer {
                }
            }
 
+           if (FoxMockConstant.FEIGN_METHOD_HANDLER.equals(classInfo.getClassName())) {
+               for (CtMethod method : declaredMethods) {
+                   String methodName = method.getName();
+                   if ("invoke".equals(methodName)) {
+                       LOG.info("mock feign FeignInvocationHandler invoke method");
+                       method.insertBefore("Object data = feign.FeignInvokeFilter.invoke($args,this);if(java.util.Objects.nonNull(data)){return ($r)data;}");
+                   }
+               }
+           }
+
+
            // 缓存没有增强之前的类的信息
            if (match && !CLASS_INFO.containsKey(className)) {
                CLASS_INFO.put(className, new ClassInfo(className, classfileBuffer, loader));
