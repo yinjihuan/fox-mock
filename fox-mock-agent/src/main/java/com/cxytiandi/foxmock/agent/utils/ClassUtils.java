@@ -17,7 +17,15 @@ public class ClassUtils {
 
     public static Class<?> forNameByFormat(String className) {
         try {
-            return Class.forName(formatClassName(className));
+            Class<?> result = null;
+            String formatClassName = formatClassName(className);
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader != null) {
+                result = classLoader.loadClass(formatClassName);
+            } else {
+                result = Class.forName(formatClassName);
+            }
+            return result;
         } catch (ClassNotFoundException e) {
             LOG.error("className {} not found", className, e);
         }
