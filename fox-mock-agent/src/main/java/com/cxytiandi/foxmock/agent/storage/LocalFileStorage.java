@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 本地文件存储
@@ -37,21 +38,21 @@ public class LocalFileStorage implements Storage {
 
     @Override
     public boolean loadData(FoxMockAgentArgs request) {
-        try {
-            String fileDirectory = request.getFoxMockFilePath();
-            if (StringUtils.isBlank(fileDirectory)) {
-                LOG.info("Can not find foxMockFilePath");
-                return false;
-            }
+        String fileDirectory = request.getFoxMockFilePath();
+        if (StringUtils.isBlank(fileDirectory)) {
+            LOG.info("Can not find foxMockFilePath");
+            return false;
+        }
 
-            if (!whiteListIsModified(request) & !fileDirectoryIsModified(fileDirectory)) {
-                return false;
-            }
+        if (!whiteListIsModified(request) & !fileDirectoryIsModified(fileDirectory)) {
+            return false;
+        }
 
-            // attach的场景会load多次，添加之前需要清空，否则如果文件有改动，则无法卸载掉之前的mock
-            mockData.clear();
+        // attach的场景会load多次，添加之前需要清空，否则如果文件有改动，则无法卸载掉之前的mock
+        mockData.clear();
 
-            Files.list(Paths.get(fileDirectory)).forEach(path -> {
+        try (Stream<Path> pathStream = Files.list(Paths.get(fileDirectory))) {
+            pathStream.forEach(path -> {
                 String key = path.getFileName().toString();
                 if (request.getMockMethodWhiteList() != null && !request.getMockMethodWhiteList().isEmpty()) {
                     if (request.getMockMethodWhiteList().contains(key)) {
@@ -90,10 +91,10 @@ public class LocalFileStorage implements Storage {
     }
 
     private void initMockDataLastModified(String fileDirectory) {
-        try {
-            mockDataLastModified.clear();
+        mockDataLastModified.clear();
 
-            Files.list(Paths.get(fileDirectory)).forEach(path -> {
+        try (Stream<Path> pathStream = Files.list(Paths.get(fileDirectory))) {
+            pathStream.forEach(path -> {
                 String key = path.getFileName().toString();
                 mockDataLastModified.put(key, path.toFile().lastModified());
             });
@@ -108,16 +109,21 @@ public class LocalFileStorage implements Storage {
                 AtomicBoolean isModified = new AtomicBoolean(false);
                 AtomicInteger fileCount = new AtomicInteger();
 
-                Files.list(Paths.get(fileDirectory)).forEach(path -> {
-                    fileCount.incrementAndGet();
+                try (Stream<Path> pathStream = Files.list(Paths.get(fileDirectory))) {
+                    pathStream.forEach(path -> {
+                        fileCount.incrementAndGet();
 
-                    String key = path.getFileName().toString();
-                    Long lastModified = mockDataLastModified.get(key);
-                    // 文件有改变
-                    if (Objects.isNull(lastModified) || !lastModified.equals(path.toFile().lastModified())) {
-                        isModified.compareAndSet(false, true);
-                    }
-                });
+                        String key = path.getFileName().toString();
+                        Long lastModified = mockDataLastModified.get(key);
+                        // 文件有改变
+                        if (Objects.isNull(lastModified) || !lastModified.equals(path.toFile().lastModified())) {
+                            isModified.compareAndSet(false, true);
+                        }
+                    });
+                } catch (IOException e) {
+                    LOG.error("loadData IOException", e);
+                }
+
 
                 // 文件有新增或者删除
                 if (fileCount.get() != mockDataLastModified.size()) {
@@ -134,8 +140,8 @@ public class LocalFileStorage implements Storage {
             } else {
                 initMockDataLastModified(fileDirectory);
             }
-        } catch (IOException e) {
-            LOG.error("loadData IOException", e);
+        } catch (Exception e) {
+            LOG.error("loadData Exception", e);
         }
         return true;
     }
