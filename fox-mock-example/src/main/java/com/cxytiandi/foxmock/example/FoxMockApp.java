@@ -73,7 +73,7 @@ public class FoxMockApp {
                 });
             }
 
-            FeignApiTestService feignApiTestService = ApplicationContextHelper.getBean(FeignApiTestService.class);
+          /*  FeignApiTestService feignApiTestService = ApplicationContextHelper.getBean(FeignApiTestService.class);
             System.out.println("feign getUserInfo:" + new Gson().toJson(feignApiTestService.getUserInfo(1L)));
             userDetailResult1 = feignApiTestService.getUserDetail();
             System.out.println("feign getUserDetail:" + new Gson().toJson(userDetailResult1));
@@ -83,7 +83,7 @@ public class FoxMockApp {
                 addressMap.forEach((k,v) -> {
                     System.out.println(k + "\t" + v.getAddress());
                 });
-            }
+            }*/
 
             System.out.println("----------------------------------------");
             Thread.sleep(5000);
